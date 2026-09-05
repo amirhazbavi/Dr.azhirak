@@ -1,0 +1,1571 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مطب دکتر اژیراک | سیستم نوبت‌دهی پیشرفته</title>
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --primary-dark: #0d47a1;
+            --primary-light: #e8f0fe;
+            --success: #0f9d58;
+            --success-light: #e6f4ea;
+            --danger: #d93025;
+            --danger-light: #fce8e6;
+            --warning: #f9ab00;
+            --warning-light: #fef7e0;
+            --gray: #5f6368;
+            --gray-light: #f1f3f4;
+            --border: #dadce0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+            --shadow-lg: 0 8px 30px rgba(0,0,0,0.14);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --gold: #c9a84c;
+            --gold-light: #fef8e7;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Vazirmatn', 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(135deg, #f0f4f9 0%, #e8ecf3 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .app-wrapper {
+            width: 100%;
+            max-width: 1200px;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 24px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 950px) {
+            .app-wrapper {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ===== HEADER CARD ===== */
+        .header-card {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #1a237e 0%, #0d47a1 30%, #1a73e8 60%, #42a5f5 100%);
+            border-radius: var(--radius);
+            padding: 28px 30px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .header-card::before {
+            content: '';
+            position: absolute;
+            top: -60%;
+            left: -20%;
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-card::after {
+            content: '';
+            position: absolute;
+            bottom: -40%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .doctor-profile {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .doctor-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffd54f 0%, #ffb300 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            border: 3px solid rgba(255,255,255,0.4);
+            flex-shrink: 0;
+        }
+
+        .doctor-info h1 {
+            font-size: 30px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .doctor-info .specialty {
+            font-size: 15px;
+            opacity: 0.95;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .doctor-info .specialty .badge {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+            font-weight: 500;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.15);
+            padding: 10px 18px;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4caf50;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.8); }
+        }
+
+        .status-text {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .phone-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--success);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .phone-btn:hover {
+            background: #0b7a45;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(15,157,88,0.4);
+        }
+
+        .today-time {
+            font-size: 13px;
+            font-weight: 500;
+            background: rgba(255,255,255,0.15);
+            padding: 8px 16px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        /* ===== INFO CARDS ===== */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            grid-column: 1 / -1;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .info-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-3px);
+        }
+
+        .info-card .icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        .info-card .icon.blue { background: var(--primary-light); color: var(--primary); }
+        .info-card .icon.green { background: var(--success-light); color: var(--success); }
+        .info-card .icon.orange { background: var(--warning-light); color: #e37400; }
+        .info-card .icon.purple { background: #f3e8fd; color: #7c3aed; }
+        .info-card .icon.gold { background: var(--gold-light); color: var(--gold); }
+
+        .info-card h3 {
+            font-size: 13px;
+            color: var(--gray);
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        .info-card .value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #202124;
+        }
+
+        .info-card .sub {
+            font-size: 12px;
+            color: var(--gray);
+            margin-top: 4px;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-panel {
+            background: white;
+            border-radius: var(--radius);
+            padding: 28px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+        }
+
+        .main-panel h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #202124;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .main-panel h2 .step {
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        /* Calendar */
+        .calendar-section { margin-bottom: 24px; }
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .calendar-nav { display: flex; gap: 8px; }
+        .calendar-nav button {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: white;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+        }
+        .calendar-nav button:hover {
+            background: var(--gray-light);
+            border-color: #ccc;
+        }
+        .calendar-month {
+            font-size: 17px;
+            font-weight: 700;
+            color: #202124;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+        }
+        .calendar-day-name {
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--gray);
+            padding: 8px 0;
+        }
+        .calendar-day {
+            aspect-ratio: 1;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            color: #202124;
+        }
+        .calendar-day:hover:not(.disabled):not(.selected) {
+            background: var(--primary-light);
+            border-color: var(--primary);
+        }
+        .calendar-day.selected {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(26,115,232,0.35);
+        }
+        .calendar-day.today {
+            border: 2px solid var(--primary);
+            font-weight: 700;
+        }
+        .calendar-day.disabled {
+            background: var(--gray-light);
+            color: #bdc1c6;
+            cursor: not-allowed;
+            border-color: #e8eaed;
+            text-decoration: line-through;
+        }
+        .calendar-day.empty {
+            background: transparent;
+            border: none;
+            cursor: default;
+        }
+        .calendar-day .holiday-dot {
+            position: absolute;
+            bottom: 3px;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--danger);
+        }
+
+        /* Time slots */
+        .time-section { margin-bottom: 24px; }
+        .time-section h3 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #202124;
+            margin-bottom: 12px;
+        }
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+            gap: 8px;
+        }
+        .time-slot {
+            padding: 12px 8px;
+            text-align: center;
+            border-radius: 10px;
+            border: 1.5px solid var(--border);
+            background: white;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+            color: #202124;
+        }
+        .time-slot:hover:not(.booked):not(.selected):not(.past) {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+        .time-slot.selected {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(26,115,232,0.35);
+        }
+        .time-slot.booked {
+            background: var(--gray-light);
+            color: #bdc1c6;
+            cursor: not-allowed;
+            border-color: #e8eaed;
+            text-decoration: line-through;
+        }
+        .time-slot.past {
+            background: #f8f9fa;
+            color: #bdc1c6;
+            cursor: not-allowed;
+            border-color: #e8eaed;
+        }
+
+        /* Form */
+        .booking-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+        @media (max-width: 600px) {
+            .booking-form { grid-template-columns: 1fr; }
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .form-group.full-width { grid-column: 1 / -1; }
+        .form-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #202124;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1.5px solid var(--border);
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.2s;
+            background: white;
+            color: #202124;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(26,115,232,0.1);
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+        .submit-btn {
+            grid-column: 1 / -1;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: 0.3px;
+        }
+        .submit-btn:hover {
+            box-shadow: 0 8px 25px rgba(26,115,232,0.4);
+            transform: translateY(-2px);
+        }
+        .submit-btn:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+        .submit-btn:disabled {
+            background: #bdc1c6;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .sidebar-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 22px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+        }
+        .sidebar-card h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #202124;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Office Photo */
+        .office-photo-container {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .office-photo-container:hover {
+            box-shadow: var(--shadow-md);
+            transform: scale(1.02);
+        }
+        .office-photo {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            display: block;
+            background: linear-gradient(135deg, #e8f0fe 0%, #d0e1fd 100%);
+        }
+        .office-photo-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%);
+            padding: 20px 15px 10px;
+            color: white;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        /* Address */
+        .address-box {
+            background: var(--gray-light);
+            border-radius: 10px;
+            padding: 14px;
+            font-size: 13px;
+            line-height: 1.9;
+            color: var(--gray);
+            position: relative;
+            border: 1px solid var(--border);
+        }
+        .address-box .copy-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 5px 12px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--gray);
+            font-weight: 600;
+        }
+        .address-box .copy-btn:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+        .map-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 10px;
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 8px 14px;
+            background: var(--primary-light);
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .map-link:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Contact */
+        .contact-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: var(--success-light);
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 12px;
+        }
+        .contact-box .contact-icon {
+            font-size: 28px;
+        }
+        .contact-box .contact-info .label {
+            font-size: 12px;
+            color: var(--gray);
+        }
+        .contact-box .contact-info .number {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--success);
+            direction: ltr;
+        }
+
+        /* Next available */
+        .next-slot {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--success-light);
+            border-radius: 10px;
+            padding: 14px;
+        }
+        .next-slot .icon { font-size: 28px; }
+        .next-slot .info .label {
+            font-size: 12px;
+            color: var(--gray);
+        }
+        .next-slot .info .value {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--success);
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .stat-item {
+            text-align: center;
+            padding: 14px;
+            border-radius: 10px;
+            background: var(--gray-light);
+            border: 1px solid var(--border);
+        }
+        .stat-item .number {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .stat-item .label {
+            font-size: 12px;
+            color: var(--gray);
+            margin-top: 4px;
+        }
+
+        /* Working hours */
+        .hours-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .hours-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--gray-light);
+            font-size: 13px;
+        }
+        .hours-item:last-child { border-bottom: none; }
+        .hours-item .day {
+            font-weight: 600;
+            color: #202124;
+        }
+        .hours-item .time {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        .hours-item .time.closed {
+            color: var(--danger);
+        }
+
+        /* Booking list */
+        .booking-list {
+            max-height: 280px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .booking-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px;
+            border-radius: 10px;
+            background: var(--gray-light);
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+        .booking-item:hover {
+            background: white;
+            box-shadow: var(--shadow-sm);
+        }
+        .booking-item .info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .booking-item .name {
+            font-weight: 700;
+            font-size: 14px;
+            color: #202124;
+        }
+        .booking-item .details {
+            font-size: 12px;
+            color: var(--gray);
+        }
+        .booking-item .status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .booking-item .status.confirmed {
+            background: var(--success-light);
+            color: var(--success);
+        }
+        .booking-item .cancel-btn {
+            background: var(--danger-light);
+            color: var(--danger);
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+        .booking-item .cancel-btn:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #202124;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            transition: all 0.4s;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        .toast.success { background: var(--success); }
+        .toast.error { background: var(--danger); }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+        .modal-overlay.show { display: flex; }
+        .modal {
+            background: white;
+            border-radius: var(--radius);
+            padding: 30px;
+            max-width: 420px;
+            width: 90%;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            animation: modalIn 0.3s ease;
+        }
+        @keyframes modalIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .modal .modal-icon { font-size: 50px; margin-bottom: 15px; }
+        .modal h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #202124;
+        }
+        .modal p {
+            font-size: 14px;
+            color: var(--gray);
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+        .modal .modal-btn {
+            padding: 12px 30px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .modal .modal-btn:hover { background: var(--primary-dark); }
+
+        @media (max-width: 600px) {
+            .app-wrapper { grid-template-columns: 1fr; gap: 16px; }
+            .header-card { padding: 20px; }
+            .header-content { flex-direction: column; align-items: flex-start; }
+            .main-panel { padding: 18px; }
+            .calendar-grid { gap: 4px; }
+            .calendar-day { font-size: 12px; }
+            .time-slots { grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); }
+            .doctor-avatar { width: 60px; height: 60px; font-size: 30px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-wrapper">
+        <!-- HEADER -->
+        <div class="header-card">
+            <div class="header-content">
+                <div class="doctor-profile">
+                    <div class="doctor-avatar">👩‍⚕️</div>
+                    <div class="doctor-info">
+                        <h1>مطب دکتر اژیراک</h1>
+                        <div class="specialty">
+                  <span class="badge"> تخصص ها</span>          <span class="badge"> عمومی</span>
+                            <span class="badge"> زنان</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <div class="status-badge">
+                        <span class="status-dot"></span>
+                        <span class="status-text">در حال پذیرش بیمار</span>
+                    </div>
+                    <a href="tel:09163431740" class="phone-btn">
+                        📞 ۰۹۱۶۳۴۳۱۷۴۰
+                    </a>
+                </div>
+                <div class="today-time" id="todayTime"></div>
+            </div>
+        </div>
+
+        <!-- INFO CARDS -->
+        <div class="info-grid">
+            <div class="info-card">
+                <div class="icon blue">📅</div>
+                <h3>نوبت امروز</h3>
+                <div class="value" id="todayBookings">0</div>
+                <div class="sub">بیمار رزرو شده</div>
+            </div>
+            <div class="info-card">
+                <div class="icon green">⏰</div>
+                <h3>ساعت کاری</h3>
+                <div class="value">۱۸:۳۰ - ۲۲:۰۰</div>
+                <div class="sub">روزهای غیر تعطیل</div>
+            </div>
+            <div class="info-card">
+                <div class="icon orange">📋</div>
+                <h3>کل نوبت‌ها</h3>
+                <div class="value" id="totalBookings">0</div>
+                <div class="sub">در این ماه</div>
+            </div>
+            <div class="info-card">
+                <div class="icon purple">👤</div>
+                <h3>وضعیت مطب</h3>
+                <div class="value" id="officeStatus">فعال</div>
+                <div class="sub" id="nextSlotInfo">در حال محاسبه...</div>
+            </div>
+        </div>
+
+        <!-- MAIN PANEL -->
+        <div class="main-panel">
+            <h2><span class="step">۱</span> انتخاب تاریخ و ساعت</h2>
+            
+            <!-- Calendar -->
+            <div class="calendar-section">
+                <div class="calendar-header">
+                    <div class="calendar-nav">
+                        <button onclick="changeMonth(-1)">▶</button>
+                        <button onclick="changeMonth(1)">◀</button>
+                    </div>
+                    <div class="calendar-month" id="calendarMonth"></div>
+                </div>
+                <div class="calendar-grid" id="calendarGrid"></div>
+            </div>
+
+            <!-- Time Slots -->
+            <div class="time-section">
+                <h3>ساعت‌های موجود</h3>
+                <div class="time-slots" id="timeSlots"></div>
+            </div>
+
+            <!-- Booking Form -->
+            <h2 style="margin-top: 10px;"><span class="step">۲</span> اطلاعات بیمار</h2>
+            <div class="booking-form">
+                <div class="form-group">
+                    <label>نام و نام خانوادگی *</label>
+                    <input type="text" id="patientName" placeholder="مثال: مریم احمدی" required>
+                </div>
+                <div class="form-group">
+                    <label>شماره تماس *</label>
+                    <input type="tel" id="patientPhone" placeholder="۰۹۱۲۳۴۵۶۷۸۹" required>
+                </div>
+                <div class="form-group">
+                    <label>کد ملی (اختیاری)</label>
+                    <input type="text" id="patientNationalId" placeholder="اختیاری">
+                </div>
+                <div class="form-group">
+                    <label>نوع ویزیت</label>
+                    <select id="visitType">
+                        <option value="عمومی">ویزیت عادی</option>
+
+ <option value="زنان">زنان </option>
+
+                    </select>
+                </div>
+                <div class="form-group full-width">
+                    <label>توضیحات (اختیاری)</label>
+                    <textarea id="patientNotes" placeholder="در صورت نیاز توضیحی بنویسید..."></textarea>
+                </div>
+                <button class="submit-btn" id="submitBtn" onclick="bookAppointment()" disabled>
+                    📌 ثبت نوبت
+                </button>
+            </div>
+        </div>
+
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <!-- Office Photo -->
+            <div class="sidebar-card">
+                <h3>🏥 مطب دکتر اژیراک</h3>
+                <div class="office-photo-container" onclick="window.open('https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800&q=80', '_blank')">
+                    <img 
+                        src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800&q=80" 
+                        alt="مطب دکتر اژیراک" 
+                        class="office-photo"
+                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                    >
+                    <div style="display: none; width: 100%; height: 180px; align-items: center; justify-content: center; background: linear-gradient(135deg, #e8f0fe 0%, #d0e1fd 100%); font-size: 40px;">
+                        🏥
+                    </div>
+                    <div class="office-photo-overlay">
+                        📍 فاز یک پاداد شهر، ساختمان پزشکان
+                    </div>
+                </div>
+            </div>
+
+            <!-- Address -->
+            <div class="sidebar-card">
+                <h3>📍 آدرس مطب</h3>
+                <div class="address-box">
+                    <button class="copy-btn" onclick="copyAddress()">کپی آدرس</button>
+                    <strong>فاز یک پاداد شهر</strong><br>
+                    بین خیابان فروردین غربی و اردیبهشت غربی<br>
+                    ساختمان پزشکان، طبقه یک
+                    <br><br>
+                    <a href="https://maps.google.com/?q=پاداد+شهر+فاز+یک+ساختمان+پزشکان" target="_blank" class="map-link">
+                        🗺 مشاهده در نقشه گوگل
+                    </a>
+                </div>
+            </div>
+
+            <!-- Contact -->
+            <div class="sidebar-card">
+                <h3>📞 تماس با مطب</h3>
+                <div class="contact-box">
+                    <div class="contact-icon">📱</div>
+                    <div class="contact-info">
+                        <div class="label">شماره تماس مستقیم</div>
+                        <div class="number">۰۹۱۶۳۴۳۱۷۴۰</div>
+                    </div>
+                </div>
+                <a href="tel:09163431740" class="map-link" style="justify-content: center; width: 100%;">
+                    📞 تماس فوری
+                </a>
+            </div>
+
+            <!-- Working Hours -->
+            <div class="sidebar-card">
+                <h3>⏰ ساعت کاری</h3>
+                <div class="hours-list">
+                    <div class="hours-item">
+                        <span class="day">شنبه تا چهارشنبه</span>
+                        <span class="time">۱۸:۳۰ - ۲۲:۰۰</span>
+                    </div>
+                    <div class="hours-item">
+                        <span class="day">پنجشنبه</span>
+                        <span class="time">۱۸:۳۰ - ۲۲:۰۰</span>
+                    </div>
+                    <div class="hours-item">
+                        <span class="day">جمعه و تعطیلات رسمی</span>
+                        <span class="time closed">تعطیل</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Next Available -->
+            <div class="sidebar-card">
+                <h3>⏳ نزدیک‌ترین نوبت خالی</h3>
+                <div class="next-slot" id="nextAvailableBox">
+                    <div class="icon">🗓</div>
+                    <div class="info">
+                        <div class="label">اولین نوبت آزاد</div>
+                        <div class="value" id="nextAvailable">در حال محاسبه...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="sidebar-card">
+                <h3>📊 آمار مطب</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="number" id="statToday">0</div>
+                        <div class="label">نوبت امروز</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="number" id="statThisWeek">0</div>
+                        <div class="label">این هفته</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="number" id="statThisMonth">0</div>
+                        <div class="label">این ماه</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="number" id="statTotal">0</div>
+                        <div class="label">کل نوبت‌ها</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Booking List -->
+            <div class="sidebar-card">
+                <h3>📋 نوبت‌های ثبت شده</h3>
+                <div class="booking-list" id="bookingList">
+                    <div style="text-align: center; color: var(--gray); font-size: 13px; padding: 20px;">
+                        هنوز نوبتی ثبت نشده است
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-icon">🎉</div>
+            <h3 id="modalTitle">نوبت با موفقیت ثبت شد!</h3>
+            <p id="modalMessage"></p>
+            <button class="modal-btn" onclick="closeModal()">متوجه شدم</button>
+        </div>
+    </div>
+
+    <script>
+        // ===== DATA =====
+        const holidays = [
+            '2026-03-20', '2026-03-21', '2026-03-22', '2026-03-23', '2026-03-24',
+            '2026-06-05', '2026-06-06', '2026-06-07'
+        ];
+
+        const workStartHour = 18;
+        const workStartMinute = 30;
+        const workEndHour = 22;
+        const workEndMinute = 0;
+        const slotDuration = 30;
+        const phoneNumber = '09163431740';
+
+        let currentDate = new Date();
+        let selectedDate = null;
+        let selectedTime = null;
+        let bookings = JSON.parse(localStorage.getItem('drAzirakBookings') || '[]');
+
+        // ===== HELPERS =====
+        function formatDate(date) {
+            return date.toLocaleDateString('fa-IR', { year: 'numeric', month: '2-digit', day: '2-digit' });
+        }
+
+        function formatDateEn(date) {
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
+        function isHoliday(date) {
+            const day = date.getDay();
+            const dateStr = formatDateEn(date);
+            if (day === 5) return true;
+            return holidays.includes(dateStr);
+        }
+
+        function isPastTime(date, timeStr) {
+            const now = new Date();
+            const [h, m] = timeStr.split(':').map(Number);
+            const slotDate = new Date(date);
+            slotDate.setHours(h, m, 0, 0);
+            return slotDate < now;
+        }
+
+        function generateTimeSlots() {
+            const slots = [];
+            let current = new Date();
+            current.setHours(workStartHour, workStartMinute, 0, 0);
+            const end = new Date();
+            end.setHours(workEndHour, workEndMinute, 0, 0);
+
+            while (current < end) {
+                const timeStr = `${String(current.getHours()).padStart(2, '0')}:${String(current.getMinutes()).padStart(2, '0')}`;
+                slots.push(timeStr);
+                current = new Date(current.getTime() + slotDuration * 60000);
+            }
+            return slots;
+        }
+
+        function isSlotBooked(date, time) {
+            const dateStr = formatDateEn(date);
+            return bookings.some(b => b.date === dateStr && b.time === time && b.status !== 'cancelled');
+        }
+
+        function getNextAvailable() {
+            const date = new Date();
+            const maxDays = 30;
+            
+            for (let i = 0; i < maxDays; i++) {
+                const checkDate = new Date(date);
+                checkDate.setDate(date.getDate() + i);
+                
+                if (isHoliday(checkDate)) continue;
+                
+                const slots = generateTimeSlots();
+                for (const slot of slots) {
+                    if (!isSlotBooked(checkDate, slot) && !isPastTime(checkDate, slot)) {
+                        return { date: checkDate, time: slot };
+                    }
+                }
+            }
+            return null;
+        }
+
+        function getTodayBookingsCount() {
+            const todayStr = formatDateEn(new Date());
+            return bookings.filter(b => b.date === todayStr && b.status !== 'cancelled').length;
+        }
+
+        function getWeekBookingsCount() {
+            const now = new Date();
+            const weekStart = new Date(now);
+            weekStart.setDate(now.getDate() - now.getDay());
+            weekStart.setHours(0, 0, 0, 0);
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekStart.getDate() + 7);
+            return bookings.filter(b => {
+                const bDate = new Date(b.date);
+                return bDate >= weekStart && bDate < weekEnd && b.status !== 'cancelled';
+            }).length;
+        }
+
+        function getMonthBookingsCount() {
+            const now = new Date();
+            const monthStr = formatDateEn(now).substring(0, 7);
+            return bookings.filter(b => b.date.startsWith(monthStr) && b.status !== 'cancelled').length;
+        }
+
+        // ===== RENDER =====
+        function renderCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const monthName = new Date(year, month).toLocaleDateString('fa-IR', { month: 'long', year: 'numeric' });
+            document.getElementById('calendarMonth').textContent = monthName;
+            
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            let firstDayIndex = firstDay.getDay();
+            firstDayIndex = (firstDayIndex + 1) % 7;
+            
+            let html = '';
+            const dayNames = ['ش', 'ی', 'د', 'س', 'چ', 'پ', 'ج'];
+            for (let i = 0; i < 7; i++) {
+                html += `<div class="calendar-day-name">${dayNames[i]}</div>`;
+            }
+            for (let i = 0; i < firstDayIndex; i++) {
+                html += `<div class="calendar-day empty"></div>`;
+            }
+            
+            const today = new Date();
+            const todayStr = formatDateEn(today);
+            
+            for (let d = 1; d <= daysInMonth; d++) {
+                const date = new Date(year, month, d);
+                const dateStr = formatDateEn(date);
+                const isToday = dateStr === todayStr;
+                const isSelected = selectedDate && formatDateEn(selectedDate) === dateStr;
+                const isDisabled = isHoliday(date) || date < new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                const isFriday = date.getDay() === 5;
+                
+                let className = 'calendar-day';
+                if (isToday) className += ' today';
+                if (isSelected) className += ' selected';
+                if (isDisabled) className += ' disabled';
+                
+                const onClick = isDisabled ? '' : `onclick="selectDate('${dateStr}')"`;
+                
+                html += `<div class="${className}" ${onClick}>
+                    ${d}
+                    ${isFriday ? '<span class="holiday-dot"></span>' : ''}
+                </div>`;
+            }
+            
+            document.getElementById('calendarGrid').innerHTML = html;
+        }
+
+        function renderTimeSlots() {
+            const container = document.getElementById('timeSlots');
+            
+            if (!selectedDate || isHoliday(selectedDate)) {
+                container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--gray); padding: 20px; font-size: 14px;">لطفاً یک روز معتبر را انتخاب کنید</div>';
+                return;
+            }
+            
+            const slots = generateTimeSlots();
+            let html = '';
+            
+            for (const slot of slots) {
+                const isBooked = isSlotBooked(selectedDate, slot);
+                const isPast = isPastTime(selectedDate, slot);
+                const isSelected = selectedTime === slot;
+                
+                let className = 'time-slot';
+                if (isBooked) className += ' booked';
+                if (isPast) className += ' past';
+                if (isSelected) className += ' selected';
+                
+                const onClick = (isBooked || isPast) ? '' : `onclick="selectTime('${slot}')"`;
+                
+                html += `<div class="${className}" ${onClick}>${slot}</div>`;
+            }
+            
+            container.innerHTML = html;
+            updateSubmitButton();
+        }
+
+        function renderBookings() {
+            const container = document.getElementById('bookingList');
+            
+            if (bookings.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: var(--gray); font-size: 13px; padding: 20px;">هنوز نوبتی ثبت نشده است</div>';
+                return;
+            }
+            
+            const sortedBookings = [...bookings].sort((a, b) => {
+                const dateA = new Date(a.date + 'T' + a.time);
+                const dateB = new Date(b.date + 'T' + b.time);
+                return dateB - dateA;
+            }).slice(0, 20);
+            
+            let html = '';
+            for (const booking of sortedBookings) {
+                const statusClass = booking.status === 'confirmed' ? 'confirmed' : 'pending';
+                const statusText = booking.status === 'confirmed' ? 'تایید شده' : 'در انتظار';
+                
+                html += `
+                    <div class="booking-item">
+                        <div class="info">
+                            <div class="name">${booking.name}</div>
+                            <div class="details">${booking.date} - ${booking.time} - ${booking.visitType || 'ویزیت عادی'}</div>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <span class="status ${statusClass}">${statusText}</span>
+                            <button class="cancel-btn" onclick="cancelBooking(${booking.id})">لغو</button>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
+        }
+
+        function updateStats() {
+            document.getElementById('todayBookings').textContent = getTodayBookingsCount();
+            document.getElementById('totalBookings').textContent = bookings.filter(b => b.status !== 'cancelled').length;
+            document.getElementById('statToday').textContent = getTodayBookingsCount();
+            document.getElementById('statThisWeek').textContent = getWeekBookingsCount();
+            document.getElementById('statThisMonth').textContent = getMonthBookingsCount();
+            document.getElementById('statTotal').textContent = bookings.filter(b => b.status !== 'cancelled').length;
+        }
+
+        function updateNextAvailable() {
+            const next = getNextAvailable();
+            const element = document.getElementById('nextAvailable');
+            const infoElement = document.getElementById('nextSlotInfo');
+            
+            if (next) {
+                const dayName = next.date.toLocaleDateString('fa-IR', { weekday: 'long' });
+                element.textContent = `${dayName} ${formatDate(next.date)} - ${next.time}`;
+                infoElement.textContent = `در ${dayName} ساعت ${next.time}`;
+            } else {
+                element.textContent = 'نوبت خالی یافت نشد';
+                infoElement.textContent = 'در ۳۰ روز آینده';
+            }
+        }
+
+        function updateTodayTime() {
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('fa-IR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            const timeStr = now.toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('todayTime').textContent = `${dateStr} - ${timeStr}`;
+        }
+
+        function updateSubmitButton() {
+            const btn = document.getElementById('submitBtn');
+            const name = document.getElementById('patientName').value.trim();
+            const phone = document.getElementById('patientPhone').value.trim();
+            
+            if (selectedDate && selectedTime && name && phone) {
+                btn.disabled = false;
+            } else {
+                btn.disabled = true;
+            }
+        }
+
+        function updateOfficeStatus() {
+            const now = new Date();
+            const day = now.getDay();
+            const hour = now.getHours();
+            const minute = now.getMinutes();
+            
+            const isWorkDay = day !== 5 && !holidays.includes(formatDateEn(now));
+            const currentMinutes = hour * 60 + minute;
+            const startMinutes = workStartHour * 60 + workStartMinute;
+            const endMinutes = workEndHour * 60 + workEndMinute;
+            
+            const statusElement = document.getElementById('officeStatus');
+            if (isWorkDay && currentMinutes >= startMinutes && currentMinutes < endMinutes) {
+                statusElement.textContent = 'باز است';
+                statusElement.style.color = 'var(--success)';
+            } else {
+                statusElement.textContent = 'بسته است';
+                statusElement.style.color = 'var(--danger)';
+            }
+        }
+
+        // ===== ACTIONS =====
+        function changeMonth(delta) {
+            currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + delta, 1);
+            selectedDate = null;
+            selectedTime = null;
+            renderCalendar();
+            renderTimeSlots();
+            updateSubmitButton();
+        }
+
+        function selectDate(dateStr) {
+            selectedDate = new Date(dateStr + 'T00:00:00');
+            selectedTime = null;
+            renderCalendar();
+            renderTimeSlots();
+            updateSubmitButton();
+        }
+
+        function selectTime(timeStr) {
+            selectedTime = timeStr;
+            renderTimeSlots();
+            updateSubmitButton();
+        }
+
+        function bookAppointment() {
+            const name = document.getElementById('patientName').value.trim();
+            const phone = document.getElementById('patientPhone').value.trim();
+            const nationalId = document.getElementById('patientNationalId').value.trim();
+            const visitType = document.getElementById('visitType').value;
+            const notes = document.getElementById('patientNotes').value.trim();
+            
+            if (!name || !phone || !selectedDate || !selectedTime) {
+                showToast('لطفاً اطلاعات را کامل وارد کنید', 'error');
+                return;
+            }
+            
+            if (!/^09\d{9}$/.test(phone)) {
+                showToast('شماره تماس معتبر نیست (مثال: ۰۹۱۲۳۴۵۶۷۸۹)', 'error');
+                return;
+            }
+            
+            const dateStr = formatDateEn(selectedDate);
+            
+            if (isSlotBooked(selectedDate, selectedTime)) {
+                showToast('این ساعت قبلاً رزرو شده است', 'error');
+                renderTimeSlots();
+                return;
+            }
+            
+            const booking = {
+                id: Date.now(),
+                name,
+                phone,
+                nationalId,
+                visitType,
+                notes,
+                date: dateStr,
+                time: selectedTime,
+                status: 'confirmed',
+                createdAt: new Date().toISOString()
+            };
+            
+            bookings.push(booking);
+            localStorage.setItem('drAzirakBookings', JSON.stringify(bookings));
+            
+            const dayName = selectedDate.toLocaleDateString('fa-IR', { weekday: 'long' });
+            document.getElementById('modalTitle').textContent = 'نوبت با موفقیت ثبت شد!';
+            document.getElementById('modalMessage').innerHTML = `
+                <strong>${name}</strong> عزیز،<br>
+                نوبت شما برای <strong>${dayName} ${formatDate(selectedDate)}</strong> ساعت <strong>${selectedTime}</strong> ثبت شد.<br>
+                نوع ویزیت: ${visitType}<br>
+                لطفاً ۱۵ دقیقه قبل در مطب حضور داشته باشید.<br><br>
+                📍 فاز یک پاداد شهر، ساختمان پزشکان، طبقه یک<br>
+                📞 ${phoneNumber}
+            `;
+            document.getElementById('modalOverlay').classList.add('show');
+            
+            document.getElementById('patientName').value = '';
+            document.getElementById('patientPhone').value = '';
+            document.getElementById('patientNationalId').value = '';
+            document.getElementById('patientNotes').value = '';
+            selectedDate = null;
+            selectedTime = null;
+            
+            renderCalendar();
+            renderTimeSlots();
+            renderBookings();
+            updateStats();
+            updateNextAvailable();
+            updateSubmitButton();
+        }
+
+        function cancelBooking(id) {
+            if (confirm('آیا از لغو این نوبت مطمئن هستید؟')) {
+                bookings = bookings.filter(b => b.id !== id);
+                localStorage.setItem('drAzirakBookings', JSON.stringify(bookings));
+                renderBookings();
+                updateStats();
+                updateNextAvailable();
+                renderTimeSlots();
+                showToast('نوبت لغو شد', 'error');
+            }
+        }
+
+        function copyAddress() {
+            const address = 'فاز یک پاداد شهر، بین خیابان فروردین غربی و اردیبهشت غربی، ساختمان پزشکان، طبقه یک';
+            navigator.clipboard.writeText(address).then(() => {
+                showToast('آدرس کپی شد', 'success');
+            }).catch(() => {
+                showToast('خطا در کپی آدرس', 'error');
+            });
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('show');
+        }
+
+        document.getElementById('modalOverlay').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        document.getElementById('patientName').addEventListener('input', updateSubmitButton);
+        document.getElementById('patientPhone').addEventListener('input', updateSubmitButton);
+
+        // ===== INIT =====
+        function init() {
+            renderCalendar();
+            renderTimeSlots();
+            renderBookings();
+            updateStats();
+            updateNextAvailable();
+            updateTodayTime();
+            updateOfficeStatus();
+            
+            setInterval(() => {
+                updateTodayTime();
+                updateOfficeStatus();
+            }, 60000);
+            
+            setInterval(() => {
+                updateOfficeStatus();
+                updateNextAvailable();
+            }, 30000);
+        }
+
+        init();
+    </script>
+</body>
+</html>
